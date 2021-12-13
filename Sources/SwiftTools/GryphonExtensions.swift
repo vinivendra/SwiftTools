@@ -18,7 +18,7 @@
 
 import Foundation
 
-internal extension String {
+public extension String {
 	// Result should have at most maxSplits + 1 elements.
 	func split(
 		withStringSeparator separator: String,
@@ -243,7 +243,7 @@ internal extension String {
 }
 
 //
-extension Character {
+public extension Character {
 	var isNumber: Bool {
 		return self == "0" ||
 			self == "1" ||
@@ -288,7 +288,7 @@ extension Character {
 }
 
 //
-extension List where Element == String {
+public extension List where Element == String {
 	// Turns ["a", "b", "c"] into "a, b and c", optionally adding double quotes to each element
 	func readableList(withQuotes: Bool = false) -> String {
 		if withQuotes {
@@ -310,7 +310,7 @@ extension List where Element == String {
 }
 
 //
-extension List {
+public extension List {
 	/// Returns nil if index is out of bounds.
 	subscript (safe index: Int) -> Element? {
 		return getSafe(index)
@@ -377,7 +377,7 @@ extension List {
 	}
 }
 
-extension List where Element: Equatable {
+public extension List where Element: Equatable {
 	/// Removes duplicated items from the array, keeping the first unique items. Returns a copy of
 	/// the array with only unique items in it. O(n^2).
 	func removingDuplicates() -> MutableList<Element> {
@@ -409,7 +409,7 @@ extension List where Element: Equatable {
 	}
 }
 
-extension RandomAccessCollection where Element: Equatable {
+public extension RandomAccessCollection where Element: Equatable {
 	/// Checks if a collection contains the elements of another one, in the same order.
 	/// If the given collection is empty, returns `true`.
 	/// This is `O(self.count)`.
@@ -439,7 +439,7 @@ extension RandomAccessCollection where Element: Equatable {
 	}
 }
 
-extension MutableList where Element: Equatable {
+public extension MutableList where Element: Equatable {
 	/// Removes the given element, if it is in the list. Returns `true` if the element was present,
 	/// `false` otherwise.
 	@discardableResult
@@ -454,7 +454,7 @@ extension MutableList where Element: Equatable {
 	}
 }
 
-class SortedList<Element>: List<Element> {
+public class SortedList<Element>: List<Element> {
 	init(_ array: [Element], sortedBy closure: (Element, Element) throws -> Bool) rethrows {
 		let sortedArray = try array.sorted(by: closure)
 		super.init(sortedArray)
@@ -494,7 +494,7 @@ class SortedList<Element>: List<Element> {
 	}
 }
 
-extension SortedList where Element: Comparable {
+public extension SortedList where Element: Comparable {
 	convenience init(of array: [Element]) {
 		self.init(array, sortedBy: <)
 	}
@@ -521,7 +521,7 @@ extension SortedList where Element: Comparable {
 }
 
 //
-extension PrintableTree {
+public extension PrintableTree {
 	static func ofStrings(_ description: String, _ subtrees: List<String>)
 		-> PrintableAsTree?
 	{

@@ -14,7 +14,7 @@ public extension String {
 	}
 }
 
-extension String {
+public extension String {
 	subscript(int: Int) -> Character {
 		let index = self.index(self.startIndex, offsetBy: int)
 		return self[index]
@@ -22,7 +22,7 @@ extension String {
 }
 
 // MARK: - Date
-extension String {
+public extension String {
 	/// Interprets a String as a date using the given format.
 	func toDate(_ format: String) -> Date {
 		let formatter = DateFormatter()
@@ -63,13 +63,13 @@ public extension TimeInterval {
 
 // MARK: - Iterations
 /// Helper type for enumerating a collection with a flag indicating whether an element is a start element, a middle element, or an end element.
-enum IterationLimit {
+public enum IterationLimit {
 	case start
 	case middle
 	case end
 }
 
-extension Collection {
+public extension Collection {
 	/// Enumerates a collection with a flag indicating whether an element is a start element, a middle element, or an end element.
 	func enumeratedWithLimits() -> Zip2Sequence<Self, [IterationLimit]> {
 		if self.count == 1 {
@@ -90,7 +90,7 @@ extension Collection {
 }
 
 // MARK: - Statistics
-extension Collection where Element: Numeric {
+public extension Collection where Element: Numeric {
 	func sum() -> Element {
 		return reduce(0, +)
 	}

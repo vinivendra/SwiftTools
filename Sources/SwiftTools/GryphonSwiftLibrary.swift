@@ -16,245 +16,6 @@
 // limitations under the License.
 //
 
-// MARK: - Template class declarations
-// gryphon ignore
-internal class GRYTemplate {
-	static func dot(_ left: GRYTemplate, _ right: String) -> GRYDotTemplate {
-		return GRYDotTemplate(left, right)
-	}
-
-	static func dot(_ left: String, _ right: String) -> GRYDotTemplate {
-		return GRYDotTemplate(GRYLiteralTemplate(string: left), right)
-	}
-
-	static func call(
-		_ function: GRYTemplate,
-		_ parameters: [GRYParameterTemplate])
-		-> GRYCallTemplate
-	{
-		return GRYCallTemplate(function, parameters)
-	}
-
-	static func call(
-		_ function: String,
-		_ parameters: [GRYParameterTemplate])
-		-> GRYCallTemplate
-	{
-		return GRYCallTemplate(function, parameters)
-	}
-}
-
-// gryphon ignore
-internal class GRYDotTemplate: GRYTemplate {
-	let left: GRYTemplate
-	let right: String
-
-	init(_ left: GRYTemplate, _ right: String) {
-		self.left = left
-		self.right = right
-	}
-}
-
-// gryphon ignore
-internal class GRYCallTemplate: GRYTemplate {
-	let function: GRYTemplate
-	let parameters: [GRYParameterTemplate]
-
-	init(_ function: GRYTemplate, _ parameters: [GRYParameterTemplate]) {
-		self.function = function
-		self.parameters = parameters
-	}
-
-	//
-	init(_ function: String, _ parameters: [GRYParameterTemplate]) {
-		self.function = GRYLiteralTemplate(string: function)
-		self.parameters = parameters
-	}
-}
-
-// gryphon ignore
-internal class GRYParameterTemplate: ExpressibleByStringLiteral {
-	let label: String?
-	let template: GRYTemplate
-
-	internal init(_ label: String?, _ template: GRYTemplate) {
-		if let existingLabel = label {
-			if existingLabel == "_" || existingLabel == "" {
-				self.label = nil
-			}
-			else {
-				self.label = label
-			}
-		}
-		else {
-			self.label = label
-		}
-
-		self.template = template
-	}
-
-	required init(stringLiteral: String) {
-		self.label = nil
-		self.template = GRYLiteralTemplate(string: stringLiteral)
-	}
-
-	static func labeledParameter(
-		_ label: String?,
-		_ template: GRYTemplate)
-		-> GRYParameterTemplate
-	{
-		return GRYParameterTemplate(label, template)
-	}
-
-	static func labeledParameter(
-		_ label: String?,
-		_ template: String)
-		-> GRYParameterTemplate
-	{
-		return GRYParameterTemplate(label, GRYLiteralTemplate(string: template))
-	}
-
-	static func dot(
-		_ left: GRYTemplate,
-		_ right: String)
-		-> GRYParameterTemplate
-	{
-		return GRYParameterTemplate(nil, GRYDotTemplate(left, right))
-	}
-
-	static func dot(
-		_ left: String,
-		_ right: String)
-		-> GRYParameterTemplate
-	{
-		return GRYParameterTemplate(nil, GRYDotTemplate(GRYLiteralTemplate(string: left), right))
-	}
-
-	static func call(
-		_ function: GRYTemplate,
-		_ parameters: [GRYParameterTemplate])
-		-> GRYParameterTemplate
-	{
-		return GRYParameterTemplate(nil, GRYCallTemplate(function, parameters))
-	}
-
-	static func call(
-		_ function: String,
-		_ parameters: [GRYParameterTemplate])
-		-> GRYParameterTemplate
-	{
-		return GRYParameterTemplate(nil, GRYCallTemplate(function, parameters))
-	}
-}
-
-// gryphon ignore
-internal class GRYLiteralTemplate: GRYTemplate {
-	let string: String
-
-	init(string: String) {
-		self.string = string
-	}
-}
-
-// gryphon ignore
-internal class GRYConcatenatedTemplate: GRYTemplate {
-	let left: GRYTemplate
-	let right: GRYTemplate
-
-	init(left: GRYTemplate, right: GRYTemplate) {
-		self.left = left
-		self.right = right
-	}
-}
-
-// gryphon ignore
-internal func + (
-	left: GRYTemplate,
-	right: GRYTemplate)
-	-> GRYConcatenatedTemplate
-{
-	GRYConcatenatedTemplate(left: left, right: right)
-}
-
-// gryphon ignore
-internal func + (left: String, right: GRYTemplate) -> GRYConcatenatedTemplate {
-	GRYConcatenatedTemplate(left: GRYLiteralTemplate(string: left), right: right)
-}
-
-// gryphon ignore
-internal func + (left: GRYTemplate, right: String) -> GRYConcatenatedTemplate {
-	GRYConcatenatedTemplate(left: left, right: GRYLiteralTemplate(string: right))
-}
-
-// MARK: - Templates
-// Replacement for Comparable
-// gryphon ignore
-private struct _Comparable: Comparable {
-	static func < (lhs: _Comparable, rhs: _Comparable) -> Bool {
-		return false
-	}
-}
-
-// Replacement for Hashable
-// gryphon ignore
-private struct _Hashable: Hashable { }
-
-private func gryphonTemplates() {
-	let _array1: MutableList<Any> = [1, 2, 3]
-	let _array2: MutableList<Any> = [1, 2, 3]
-	let _array3: [Any] = [1, 2, 3]
-	let _dictionary: [_Hashable: Any] = [:]
-	let _list: List<Any> = []
-	let _map: Map<_Hashable, Any> = [:]
-	let _any: Any = 0
-	let _string: String = ""
-	let _index = _string.startIndex
-	let _comparableArray: List<_Comparable> = []
-	let _closure: (_Comparable, _Comparable) -> Bool = { _, _ in true }
-
-	// Templates with an input that references methods defined in this file
-	_ = zip(_array1, _array2)
-	_ = GRYTemplate.call(.dot("_array1", "zip"), ["_array2"])
-
-	_ = _array1.toList()
-	_ = GRYTemplate.call(.dot("_array1", "toList"), [])
-
-	_ = _array1.appending(_any)
-	_ = "_array1 + _any"
-
-	_ = _array1.appending(contentsOf: _array2)
-	_ = "_array1 + _array2"
-
-	_ = List(_array3)
-	_ = GRYTemplate.call(.dot("_array3", "toList"), [])
-
-	_ = MutableList(_array3)
-	_ = GRYTemplate.call(.dot("_array3", "toMutableList"), [])
-
-	_ = Map(_dictionary)
-	_ = GRYTemplate.call(.dot("_dictionary", "toMap"), [])
-
-	_ = MutableMap(_dictionary)
-	_ = GRYTemplate.call(.dot("_dictionary", "toMutableMap"), [])
-
-	_ = _list.array
-	_ = GRYTemplate.call(.dot("_list", "toList"), [])
-
-	_ = _map.dictionary
-	_ = GRYTemplate.call(.dot("_map", "toMap"), [])
-
-	// Templates with an output that references methods defined in the GryphonKotlinLibrary.kt file
-	_ = _string.suffix(from: _index)
-	_ = GRYTemplate.call(.dot("_string", "suffix"), [.labeledParameter("startIndex", "_index")])
-
-	_ = _comparableArray.sorted(by: _closure)
-	_ = GRYTemplate.call(
-		.dot("_comparableArray", "sorted"), [.labeledParameter("isAscending", "_closure")])
-
-	_ = _array1.removeLast()
-	_ = GRYTemplate.call(.dot("_array1", "removeLast"), [])
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // MARK: - Collections
 
@@ -861,8 +622,8 @@ public class Map<Key, Value>: CustomStringConvertible,
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // gryphon ignore
-extension Map {
-	public func toMutableMap() -> MutableMap<Key, Value> {
+public extension Map {
+	func toMutableMap() -> MutableMap<Key, Value> {
 		return MutableMap(dictionary)
 	}
 }
@@ -896,11 +657,11 @@ public class MutableMap<Key, Value>: Map<Key, Value> where Key: Hashable {
 }
 
 // gryphon ignore
-extension Map {
+public extension Map {
 	/// Used to obtain a MutableMap with new key and/or value types. If all keys and values in the
 	/// map can be casted to the new types, the method succeeds and the new MutableMap is returned.
 	/// Otherwise, the method returns `nil`.
-	public func `as`<CastedKey, CastedValue>(
+	func `as`<CastedKey, CastedValue>(
 		_ type: MutableMap<CastedKey, CastedValue>.Type)
 		-> MutableMap<CastedKey, CastedValue>?
 	{
@@ -915,7 +676,7 @@ extension Map {
 	/// Used to obtain a Map with new key and/or value types. If all keys and values in the map can
 	/// be casted to the new types, the method succeeds and the new Map is returned. Otherwise, the
 	/// method crashes.
-	public func forceCast<CastedKey, CastedValue>(
+	func forceCast<CastedKey, CastedValue>(
 		to type: MutableMap<CastedKey, CastedValue>.Type)
 		-> MutableMap<CastedKey, CastedValue>
 	{

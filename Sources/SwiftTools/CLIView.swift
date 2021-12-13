@@ -2,7 +2,7 @@
 import Foundation
 
 /// Pad a number with a `0` to the left if needed. Created especially for minutes/seconds in time formatting (e.g. `"10:05"`)
-func padTime(_ time: Int) -> String {
+public func padTime(_ time: Int) -> String {
 	if time < 10 {
 		return "0\(time)"
 	}
